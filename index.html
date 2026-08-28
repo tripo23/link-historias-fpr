@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow — Trazabilidad FPR → Intermedio → Historia · Q3 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-light: #e8f7f2;
+    --green-mid: #c2eadc;
+    --green-dark: #157a5a;
+    --bg: #f7f8fa;
+    --white: #ffffff;
+    --border: #e4e7ec;
+    --text: #1a1f2e;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --cyc: #EF9F27;
+    --dispo: #378ADD;
+    --pb: #1D9E75;
+    --oyo: #D4537E;
+    --core: #7F77DD;
+    --host: #888780;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --amber-light: #FEF3E2;
+    --amber-dark: #92400E;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(16,24,40,0.06), 0 1px 2px rgba(16,24,40,0.04);
+    --radius: 12px;
+    --mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; }
+
+  header { background: var(--white); border-bottom: 1px solid var(--border); padding: 44px 24px 28px; }
+  .header-inner { max-width: 940px; margin: 0 auto; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green-dark);
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 4px 12px;
+    border-radius: 20px; margin-bottom: 16px; border: 1px solid var(--green-mid); }
+  .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1.25; }
+  .subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 4px; }
+  .subtitle .sep { color: var(--text-muted); margin: 0 6px; }
+  .foot-note { color: var(--text-muted); font-size: 12px; font-style: italic; margin-top: 6px; }
+
+  .quicknav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .qn-link { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; text-decoration: none; transition: all .15s; }
+  .qn-link:hover { border-color: var(--green); color: var(--green-dark); background: var(--green-light); }
+
+  main { max-width: 940px; margin: 0 auto; padding: 40px 24px 90px; }
+  section { margin-bottom: 52px; scroll-margin-top: 20px; }
+
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .section-num { width: 26px; height: 26px; border-radius: 7px; background: var(--green); color: white;
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: var(--mono); }
+  h2 { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+  .section-sub { color: var(--text-muted); font-size: 12.5px; margin: 6px 0 18px 36px; line-height: 1.55; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpi { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px;
+    box-shadow: var(--shadow-sm); border-top: 3px solid var(--border); }
+  .kpi.k-total { border-top-color: var(--text-muted); }
+  .kpi.k-a { border-top-color: var(--green); }
+  .kpi.k-b { border-top-color: var(--red); }
+  .kpi.k-c { border-top-color: var(--cyc); }
+  .kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-family: var(--mono); font-size: 26px; font-weight: 500; letter-spacing: -0.01em; }
+  .kpi.k-a .kpi-value { color: var(--green-dark); }
+  .kpi.k-b .kpi-value { color: var(--red); }
+  .kpi.k-c .kpi-value { color: var(--amber-dark); }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+  .semaforo-bar { display: flex; border-radius: 10px; overflow: hidden; height: 34px; margin-top: 18px; box-shadow: var(--shadow-sm); }
+  .sem-seg { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 500; color: #fff; }
+  .sem-a { background: var(--green); }
+  .sem-b { background: var(--red); }
+  .sem-c { background: var(--cyc); }
+  .sem-legend { display: flex; gap: 18px; margin-top: 10px; flex-wrap: wrap; }
+  .sem-leg-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-secondary); }
+  .sem-leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  .mes-details { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; background: var(--white); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .mes-details summary { list-style: none; cursor: pointer; padding: 13px 18px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 10px; }
+  .mes-details summary::-webkit-details-marker { display: none; }
+  .mes-details summary .chevron { margin-left: auto; font-size: 12px; color: var(--text-muted); transition: transform .15s; font-family: var(--mono); }
+  .mes-details[open] summary .chevron { transform: rotate(90deg); }
+  .mes-details summary .mes-summary-sub { font-size: 11.5px; font-weight: 400; color: var(--text-muted); font-family: var(--mono); }
+  .mes-details .mes-details-body { padding: 0 18px 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+
+  .table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .table th { font-size: 10.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em;
+    text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+  .table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .table tr:last-child td { border-bottom: none; }
+  .table td.num, .table th.num { text-align: center; font-family: var(--mono); }
+  .team-row { display: flex; align-items: center; gap: 8px; }
+  .team-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .pill { display: inline-block; font-family: var(--mono); font-size: 10.5px; padding: 2px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .pill-green { background: var(--green-light); color: var(--green-dark); }
+  .pill-blue { background: #e6f1fb; color: #185fa5; }
+  .pill-amber { background: var(--amber-light); color: var(--amber-dark); }
+  .pill-gray { background: var(--bg); color: var(--text-muted); }
+  .pill-red { background: var(--red-light); color: var(--red); }
+
+  .callout { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; margin-bottom: 8px; border: 1px solid transparent; }
+  .callout.danger { background: var(--red-light); border-color: #f3c6c6; }
+  .callout.warning { background: var(--amber-light); border-color: #f6dba8; }
+  .callout.ok { background: var(--green-light); border-color: var(--green-mid); }
+  .callout-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+  .callout-body { flex: 1; }
+  .callout-key { font-family: var(--mono); font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+  .callout.danger .callout-key { color: var(--red); }
+  .callout.warning .callout-key { color: var(--amber-dark); }
+  .callout.ok .callout-key { color: var(--green-dark); }
+  .callout-text { font-size: 12.5px; line-height: 1.5; color: var(--text-secondary); }
+  .callout-text strong { color: var(--text); }
+
+  .eq-block { border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius);
+    padding: 18px 20px; margin-bottom: 12px; background: var(--white); box-shadow: var(--shadow-sm); }
+  .eq-block.t-core { border-left-color: var(--core); }
+  .eq-block.t-oyo { border-left-color: var(--oyo); }
+  .eq-block.t-cat { border-left-color: var(--cyc); }
+  .eq-block.t-dispo { border-left-color: var(--dispo); }
+  .eq-block.t-pb { border-left-color: var(--pb); }
+  .eq-block.t-host { border-left-color: var(--host); }
+  .eq-block-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .eq-block-name { display:flex; align-items:center; gap:8px; font-size: 14.5px; font-weight: 700; }
+  .eq-tldr { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+  .eq-tldr b { color: var(--text); }
+
+  .mech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+  .mech-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow-sm); }
+  .mech-name { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--green-dark); margin-bottom: 6px; }
+  .mech-count { font-family: var(--mono); font-size: 22px; font-weight: 500; margin-bottom: 6px; }
+  .mech-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .mech-example { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); margin-top: 8px; background: var(--bg); padding: 6px 8px; border-radius: 6px; }
+
+  .insight { padding: 13px 16px; border-radius: 10px; background: var(--amber-light); border: 1px solid #f6dba8; font-size: 12.5px; color: var(--amber-dark); line-height: 1.6; display: flex; gap: 10px; }
+  .insight-icon { flex-shrink: 0; }
+
+  .stream-name { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+
+  @media (max-width: 640px) {
+    header { padding: 32px 18px 22px; }
+    main { padding: 28px 18px 70px; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .mech-grid { grid-template-columns: 1fr; }
+    .section-sub { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="badge">Trazabilidad · Q3 2026</span>
+    <h1>Cadena FPR → Intermedio → Historia</h1>
+    <p class="subtitle">Historias resueltas en Q3<span class="sep">·</span>6 de julio — 27 de septiembre<span class="sep">·</span>10 squads confirmados</p>
+    <p class="foot-note">Fuentes: export de historias por squad, export de épicas intermedias, export de iniciativas FPR comprometidas Q3 · sin BI/BIAF, sin Core (CTI2 pendiente de confirmación)</p>
+    <nav class="quicknav">
+      <a class="qn-link" href="#resumen">Resumen</a>
+      <a class="qn-link" href="#nivel1">Nivel 1 · Squad→Intermedio</a>
+      <a class="qn-link" href="#nivel2">Nivel 2 · Intermedio→FPR</a>
+      <a class="qn-link" href="#cadena">Cadena completa</a>
+      <a class="qn-link" href="#mecanismos">Mecanismos de linkeo</a>
+      <a class="qn-link" href="#alertas">Alertas</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section id="resumen">
+    <div class="section-header"><span class="section-num">01</span><h2>Resumen — 637 historias resueltas en Q3</h2></div>
+    <p class="section-sub">Clasificación end-to-end: ¿la historia traza completa hasta un FPR, o se corta en algún punto de la cadena?</p>
+
+    <div class="callout warning">
+      <span class="callout-icon">📌</span>
+      <div class="callout-body">
+        <div class="callout-key">Base de este análisis</div>
+        <div class="callout-text">La muestra parte <strong>de abajo hacia arriba</strong>: son las 637 historias con status <strong>Done</strong> resueltas en Q3. Las épicas intermedias y los FPR que aparecen acá son solo los que tienen al menos una historia Done linkeada — no es el universo completo de épicas o iniciativas de cada stream. Una épica o FPR sin ninguna historia Done todavía (por ejemplo, si está en curso o no arrancó) no va a aparecer en este dashboard, aunque exista y esté activo en Jira.</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid" style="margin-top:16px">
+      <div class="kpi k-total">
+        <div class="kpi-label">Historias / equiv</div>
+        <div class="kpi-value">637</div>
+        <div class="kpi-sub">Story + Card en FCAT</div>
+      </div>
+      <div class="kpi k-a">
+        <div class="kpi-label">Traza completa a FPR</div>
+        <div class="kpi-value">318</div>
+        <div class="kpi-sub">49.9% del total</div>
+      </div>
+      <div class="kpi k-b">
+        <div class="kpi-label">Sin parent real</div>
+        <div class="kpi-value">299</div>
+        <div class="kpi-sub">46.9% · huérfano o mismo squad</div>
+      </div>
+      <div class="kpi k-c">
+        <div class="kpi-label">Épica sin FPR</div>
+        <div class="kpi-value">20</div>
+        <div class="kpi-sub">3.1% · corte un nivel arriba</div>
+      </div>
+    </div>
+
+    <div class="semaforo-bar">
+      <div class="sem-seg sem-a" style="flex:318">318</div>
+      <div class="sem-seg sem-b" style="flex:299">299</div>
+      <div class="sem-seg sem-c" style="flex:20">20</div>
+    </div>
+    <div class="sem-legend">
+      <div class="sem-leg-item"><span class="sem-leg-dot" style="background:var(--green)"></span>A · Traza completa a FPR</div>
+      <div class="sem-leg-item"><span class="sem-leg-dot" style="background:var(--red)"></span>B · Sin parent real</div>
+      <div class="sem-leg-item"><span class="sem-leg-dot" style="background:var(--cyc)"></span>C · Épica intermedia sin FPR</div>
+    </div>
+
+  </section>
+
+  <section id="nivel1">
+    <div class="section-header"><span class="section-num">02</span><h2>Nivel 1 — Historia → Tablero intermedio</h2></div>
+    <p class="section-sub">¿La historia llega al tablero intermedio correcto de su stream (CYC, SOYO, SP, HOSTM/HOSTW), o se corta antes?</p>
+
+    <details class="mes-details">
+      <summary>OYO <span class="chevron">▸</span><span class="mes-summary-sub">&nbsp;· BOYO, WOYO, MOYO(=OYO) → SOYO</span></summary>
+      <div class="mes-details-body">
+        <table class="table">
+          <thead><tr><th>Squad</th><th class="num">Total historias</th><th class="num">Llega a SOYO</th><th class="num">%</th></tr></thead>
+          <tbody>
+            <tr><td>OYO (=MOYO)</td><td class="num">85</td><td class="num">77</td><td class="num"><span class="pill pill-green">90.6%</span></td></tr>
+            <tr><td>WOYO</td><td class="num">39</td><td class="num">32</td><td class="num"><span class="pill pill-green">82.1%</span></td></tr>
+            <tr><td>BOYO</td><td class="num">54</td><td class="num">41</td><td class="num"><span class="pill pill-green">75.9%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="mes-details">
+      <summary>Host <span class="chevron">▸</span><span class="mes-summary-sub">&nbsp;· HOSTM, HOSTW (sin squad separado)</span></summary>
+      <div class="mes-details-body">
+        <table class="table">
+          <thead><tr><th>Squad</th><th class="num">Total historias</th><th class="num">Llega a HOSTM/HOSTW</th><th class="num">%</th></tr></thead>
+          <tbody>
+            <tr><td>HOSTM</td><td class="num">38</td><td class="num">30</td><td class="num"><span class="pill pill-green">78.9%</span></td></tr>
+            <tr><td>HOSTW</td><td class="num">32</td><td class="num">17</td><td class="num"><span class="pill pill-amber">53.1%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="mes-details">
+      <summary>Catálogo y Contenidos <span class="chevron">▸</span><span class="mes-summary-sub">&nbsp;· FCAT → CYC (Card = equivalente de Story)</span></summary>
+      <div class="mes-details-body">
+        <table class="table">
+          <thead><tr><th>Squad</th><th class="num">Total historias</th><th class="num">Llega a CYC</th><th class="num">%</th></tr></thead>
+          <tbody>
+            <tr><td>FCAT</td><td class="num">234</td><td class="num">133</td><td class="num"><span class="pill pill-amber">56.8%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="mes-details">
+      <summary>Playback <span class="chevron">▸</span><span class="mes-summary-sub">&nbsp;· PLBAND, PLBATV, PLBIOS, PWYS → SP</span></summary>
+      <div class="mes-details-body">
+        <table class="table">
+          <thead><tr><th>Squad</th><th class="num">Total historias</th><th class="num">Llega a SP</th><th class="num">%</th></tr></thead>
+          <tbody>
+            <tr><td>PWYS</td><td class="num">38</td><td class="num">6</td><td class="num"><span class="pill pill-red">15.8%</span></td></tr>
+            <tr><td>PLBATV</td><td class="num">20</td><td class="num">1</td><td class="num"><span class="pill pill-red">5.0%</span></td></tr>
+            <tr><td>PLBAND</td><td class="num">70</td><td class="num">1</td><td class="num"><span class="pill pill-red">1.4%</span></td></tr>
+            <tr><td>PLBIOS</td><td class="num">27</td><td class="num">0</td><td class="num"><span class="pill pill-red">0.0%</span></td></tr>
+          </tbody>
+        </table>
+        <p class="section-sub" style="margin:12px 0 0">Los 4 squads arman épicas locales propias (ej. "Equipo 3 Playback Labs") en vez de colgar de SP — patrón sistemático, no un caso puntual.</p>
+      </div>
+    </details>
+  </section>
+
+  <section id="nivel2">
+    <div class="section-header"><span class="section-num">03</span><h2>Nivel 2 — Tablero intermedio → FPR</h2></div>
+    <p class="section-sub">De las 67 épicas intermedias que son parent de alguna historia Q3, ¿cuántas están a su vez linkeadas a un FPR?</p>
+    <table class="table">
+      <thead><tr><th>Intermedio</th><th class="num">Épicas relevadas</th><th class="num">Con FPR</th><th class="num">%</th></tr></thead>
+      <tbody>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--cyc)"></span>CYC</span></td><td class="num">43</td><td class="num">36</td><td class="num"><span class="pill pill-green">83.7%</span></td></tr>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--oyo)"></span>SOYO</span></td><td class="num">13</td><td class="num">12</td><td class="num"><span class="pill pill-green">92.3%</span></td></tr>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--pb)"></span>SP</span></td><td class="num">2</td><td class="num">1</td><td class="num"><span class="pill pill-amber">50.0%</span></td></tr>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--host)"></span>HOSTM</span></td><td class="num">6</td><td class="num">5</td><td class="num"><span class="pill pill-green">83.3%</span></td></tr>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--host)"></span>HOSTW</span></td><td class="num">3</td><td class="num">3</td><td class="num"><span class="pill pill-green">100%</span></td></tr>
+      </tbody>
+    </table>
+    <p class="section-sub" style="margin-top:14px"><strong>Global: 57/67 = 85.1%.</strong> Este nivel de la cadena está bastante mejor trazado que el nivel 1 — el problema de fondo está concentrado en historia→intermedio, no en intermedio→FPR.</p>
+  </section>
+
+  <section id="cadena">
+    <div class="section-header"><span class="section-num">04</span><h2>Cadena completa por stream</h2></div>
+    <p class="section-sub">Combinando ambos niveles: A = traza completa a FPR · B = sin parent real · C = épica sin FPR</p>
+
+    <table class="table" style="margin-bottom:24px">
+      <thead><tr><th>Stream</th><th>Squad</th><th class="num">A</th><th class="num">B</th><th class="num">C</th><th class="num">Total</th><th class="num">% A</th></tr></thead>
+      <tbody>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--oyo)"></span>OYO</span></td><td>OYO (=MOYO)</td><td class="num">77</td><td class="num">8</td><td class="num">0</td><td class="num">85</td><td class="num"><span class="pill pill-green">90.6%</span></td></tr>
+        <tr><td></td><td>WOYO</td><td class="num">32</td><td class="num">7</td><td class="num">0</td><td class="num">39</td><td class="num"><span class="pill pill-green">82.1%</span></td></tr>
+        <tr><td></td><td>BOYO</td><td class="num">40</td><td class="num">13</td><td class="num">1</td><td class="num">54</td><td class="num"><span class="pill pill-green">74.1%</span></td></tr>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--host)"></span>Host</span></td><td>HOSTM</td><td class="num">30</td><td class="num">8</td><td class="num">0</td><td class="num">38</td><td class="num"><span class="pill pill-green">78.9%</span></td></tr>
+        <tr><td></td><td>HOSTW</td><td class="num">17</td><td class="num">15</td><td class="num">0</td><td class="num">32</td><td class="num"><span class="pill pill-amber">53.1%</span></td></tr>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--cyc)"></span>Catálogo</span></td><td>FCAT</td><td class="num">116</td><td class="num">101</td><td class="num">17</td><td class="num">234</td><td class="num"><span class="pill pill-amber">49.6%</span></td></tr>
+        <tr><td><span class="team-row"><span class="team-dot" style="background:var(--pb)"></span>Playback</span></td><td>PWYS</td><td class="num">6</td><td class="num">32</td><td class="num">0</td><td class="num">38</td><td class="num"><span class="pill pill-red">15.8%</span></td></tr>
+        <tr><td></td><td>PLBATV</td><td class="num">0</td><td class="num">19</td><td class="num">1</td><td class="num">20</td><td class="num"><span class="pill pill-red">0.0%</span></td></tr>
+        <tr><td></td><td>PLBAND</td><td class="num">0</td><td class="num">69</td><td class="num">1</td><td class="num">70</td><td class="num"><span class="pill pill-red">0.0%</span></td></tr>
+        <tr><td></td><td>PLBIOS</td><td class="num">0</td><td class="num">27</td><td class="num">0</td><td class="num">27</td><td class="num"><span class="pill pill-red">0.0%</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="eq-block t-oyo">
+      <div class="eq-block-header"><span class="eq-block-name"><span class="team-dot" style="background:var(--oyo)"></span>OYO</span><span class="pill pill-green">83.7% traza completa</span></div>
+      <p class="eq-tldr">178 historias · <b>149 A</b> · 28 B · 1 C. El stream mejor trazado de punta a punta, en los tres squads.</p>
+    </div>
+
+    <div class="eq-block t-host">
+      <div class="eq-block-header"><span class="eq-block-name"><span class="team-dot" style="background:var(--host)"></span>Host</span><span class="pill pill-green">67.1% traza completa</span></div>
+      <p class="eq-tldr">70 historias · <b>47 A</b> · 23 B · 0 C. Corregido tras revisar el mecanismo de linkeo "Aprobación" — inicialmente parecía 0% a nivel FPR, en realidad las épicas de Host sí están linkeadas, solo que por un canal distinto al que veníamos mirando.</p>
+    </div>
+
+    <div class="eq-block t-cat">
+      <div class="eq-block-header"><span class="eq-block-name"><span class="team-dot" style="background:var(--cyc)"></span>Catálogo y Contenidos</span><span class="pill pill-amber">49.6% traza completa</span></div>
+      <p class="eq-tldr">234 historias · <b>116 A</b> · 101 B · 17 C. La mitad no traza — mayormente por falta de parent (Card sin parent, ver detalle de squad), no por épicas sin FPR.</p>
+    </div>
+
+    <div class="eq-block t-pb">
+      <div class="eq-block-header"><span class="eq-block-name"><span class="team-dot" style="background:var(--pb)"></span>Playback</span><span class="pill pill-red">3.9% traza completa</span></div>
+      <p class="eq-tldr">155 historias · <b>6 A</b> · 147 B · 2 C. El stream con el problema más grave y más simple de diagnosticar: casi nada llega siquiera al tablero intermedio SP. No es un problema de FPR — es un problema de linkeo squad→intermedio.</p>
+    </div>
+  </section>
+
+  <section id="mecanismos">
+    <div class="section-header"><span class="section-num">05</span><h2>Mecanismos de linkeo encontrados</h2></div>
+    <p class="section-sub">El nivel intermedio→FPR no depende de un único mecanismo — hay tres formas distintas de llegar al FPR, y conviene mirarlas todas.</p>
+    <div class="mech-grid">
+      <div class="mech-card">
+        <div class="mech-name">Parent nativo</div>
+        <div class="mech-count">38</div>
+        <div class="mech-desc">Campo "Parent key" estándar de Jira — jerarquía nativa is-parent-of.</div>
+        <div class="mech-example">SOYO-411 → FPR-2008</div>
+      </div>
+      <div class="mech-card">
+        <div class="mech-name">Issue link "Parent-Child"</div>
+        <div class="mech-count">10</div>
+        <div class="mech-desc">Link manual tipo Parent-Child, no es jerarquía nativa — usado como workaround en varios squads.</div>
+        <div class="mech-example">CYC-815 → FPR-2016</div>
+      </div>
+      <div class="mech-card">
+        <div class="mech-name">Issue link "Aprobación"</div>
+        <div class="mech-count">10</div>
+        <div class="mech-desc">Link de aprobación — es el que resuelve todo el caso Host. No estaba en el radar del análisis original.</div>
+        <div class="mech-example">HOSTM-1505 → FPR-1968</div>
+      </div>
+    </div>
+    <p class="section-sub" style="margin-top:16px">Los tres mecanismos combinados explican 57 de las 67 épicas relevadas. Cualquier análisis de trazabilidad futuro necesita chequear los tres — mirar solo "Parent key" subestima la trazabilidad real.</p>
+  </section>
+
+  <section id="alertas">
+    <div class="section-header"><span class="section-num">06</span><h2>Alertas y pendientes</h2></div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-key">Conflicto de FPR — 3 épicas</div>
+        <div class="callout-text"><strong>HOSTM-1226</strong> apunta a FPR-1703 y FPR-1816 · <strong>HOSTW-306</strong> apunta a FPR-1924 y FPR-1976 · <strong>SOYO-411</strong> apunta a FPR-2008 (nativo) y FPR-1903 (aprobación). Ambigüedad real de traza — no está claro cuál es el FPR vigente en cada caso.</div>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-key">FPR referenciados pero no comprometidos — 2 casos</div>
+        <div class="callout-text"><strong>FPR-1867</strong> y <strong>FPR-1935</strong> aparecen como destino de épicas intermedias pero no están en el export de 91 iniciativas comprometidas Q3. Puede ser filtro del export o falta de tag de Q3.</div>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-key">10 épicas sin ningún FPR</div>
+        <div class="callout-text">Mayormente en CYC (7 de 10) — ningún mecanismo de linkeo las conecta a una iniciativa. Candidatas a revisión directa con Daiana.</div>
+      </div>
+    </div>
+
+    <div class="callout danger">
+      <span class="callout-icon">🔴</span>
+      <div class="callout-body">
+        <div class="callout-key">Playback — problema de linkeo squad→intermedio, no de FPR</div>
+        <div class="callout-text">3.9% de traza completa contra 83.7% de OYO. La causa raíz está en el nivel 1: los squads arman épicas propias en vez de usar SP. Conversación pendiente con Juan Pablo / Julian.</div>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <div class="callout-key">Host — corregido</div>
+        <div class="callout-text">Lo que parecía 0% de trazabilidad a FPR en realidad es 83-100% una vez que se suma el mecanismo de linkeo "Aprobación". No hay problema real de traza en Host.</div>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-key">Streams pendientes</div>
+        <div class="callout-text">Dispositivos (DATV2, STB) y Core (CTI2) todavía no están incorporados a este análisis end-to-end. HES, FCP, FMD, PLB siguen TBC.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>
