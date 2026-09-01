@@ -181,6 +181,7 @@
       <a class="qn-link" href="#nivel1">Nivel 1 · Squad→Intermedio</a>
       <a class="qn-link" href="#nivel2">Nivel 2 · Intermedio→FPR</a>
       <a class="qn-link" href="#oyo-deep">Doble click OYO</a>
+      <a class="qn-link" href="#llm-scenario">Si linkeamos con IA</a>
       <a class="qn-link" href="#slicing">Slicing</a>
     </nav>
   </div>
@@ -459,8 +460,40 @@
     <p class="section-sub" style="margin-top:10px">Mismo patrón de concentración que se repite en otros streams — ver detalle completo de outliers en la sección de Slicing.</p>
   </section>
 
+  <section id="llm-scenario">
+    <div class="section-header"><span class="section-num">06</span><h2>Si linkeamos lo que sugirió la herramienta de IA</h2></div>
+    <p class="section-sub">Para las historias sin traza, se corrió una herramienta que sugiere el FPR más probable por contenido (ver documentación técnica para el detalle del script y su validación de precisión, 85-92%).</p>
+
+    <div class="callout warning" style="margin-bottom:16px">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-key">Universo parcialmente desalineado</div>
+        <div class="callout-text">Esta corrida se hizo <b>antes</b> de confirmar que FCP y HES también usan Card como historia — el script analizó 492 historias sin traza, pero el universo actual (con ese fix aplicado) es de 578. Falta re-correr para cubrir esa diferencia, sobre todo en Playback.</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid" style="margin-bottom:18px">
+      <div class="kpi k-a"><div class="kpi-label">Historias sin traza analizadas</div><div class="kpi-value">492</div><div class="kpi-sub">de las 578 actuales</div></div>
+      <div class="kpi k-a"><div class="kpi-label">Candidatos alta confianza con FPR</div><div class="kpi-value">302</div><div class="kpi-sub">61.4% de las analizadas</div></div>
+      <div class="kpi k-b"><div class="kpi-label">Confirmado como BAU</div><div class="kpi-value">172</div><div class="kpi-sub">sin iniciativa asociada, con razón clara</div></div>
+    </div>
+
+    <table class="table">
+      <thead><tr><th>Stream</th><th class="num">Sin traza analizadas</th><th class="num">Candidato alta</th><th class="num">%</th></tr></thead>
+      <tbody>
+        <tr><td>Host</td><td class="num">51</td><td class="num">35</td><td class="num"><span class="pill pill-green">68.6%</span></td></tr>
+        <tr><td>OYO</td><td class="num">72</td><td class="num">52</td><td class="num"><span class="pill pill-green">72.2%</span></td></tr>
+        <tr><td>Catálogo</td><td class="num">90</td><td class="num">65</td><td class="num"><span class="pill pill-green">72.2%</span></td></tr>
+        <tr><td>Playback</td><td class="num">198</td><td class="num">116</td><td class="num"><span class="pill pill-amber">58.6%</span></td></tr>
+        <tr><td>Dispositivos</td><td class="num">48</td><td class="num">21</td><td class="num"><span class="pill pill-amber">43.8%</span></td></tr>
+        <tr><td>Core</td><td class="num">33</td><td class="num">13</td><td class="num"><span class="pill pill-amber">39.4%</span></td></tr>
+      </tbody>
+    </table>
+    <p class="section-sub" style="margin-top:14px">Si se revisan y cargan los 302 candidatos, la traza global (sobre el universo de 492 analizado) pasaría de 0% a ~61% en esas historias puntuales — sumado a las 621 que ya trazan, el total subiría considerablemente. Falta re-correr con el universo completo (578) para tener el número final exacto, pero la tendencia y el orden de magnitud deberían sostenerse.</p>
+  </section>
+
   <section id="slicing">
-    <div class="section-header"><span class="section-num">06</span><h2>¿Problema de slicing?</h2></div>
+    <div class="section-header"><span class="section-num">07</span><h2>¿Problema de slicing?</h2></div>
     <p class="section-sub">Cuando un FPR tiene muchísimas historias debajo, ¿es que el FPR está mal armado (muy grande), o las historias están sobre-fragmentadas? Volumen de historias por FPR, todo status excepto Cancelled.</p>
 
     <div class="callout warning" style="margin-bottom:16px">
