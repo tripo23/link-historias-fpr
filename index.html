@@ -53,6 +53,25 @@
     border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; text-decoration: none; transition: all .15s; }
   .qn-link:hover { border-color: var(--green); color: var(--green-dark); background: var(--green-light); }
 
+  .pdf-btn { position: fixed; top: 20px; right: 20px; z-index: 50; display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green); color: white; border: none; border-radius: 20px; padding: 10px 18px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-md);
+    transition: background .15s; }
+  .pdf-btn:hover { background: var(--green-dark); }
+
+  @media print {
+    .pdf-btn, .quicknav { display: none !important; }
+    details > *:not(summary) { display: block !important; }
+    details summary .chevron { display: none !important; }
+    details summary { cursor: default; }
+    body { background: white; }
+    .kpi, .stream-card, .eq-block, .direction-card, .bar-card, .mes-details, .callout, .answer-block { box-shadow: none !important; }
+    section { break-inside: avoid; }
+  }
+  @media (max-width: 640px) {
+    .pdf-btn { top: 12px; right: 12px; padding: 8px 14px; font-size: 12px; }
+  }
+
   main { max-width: 940px; margin: 0 auto; padding: 40px 24px 90px; }
   section { margin-bottom: 52px; scroll-margin-top: 20px; }
 
@@ -168,6 +187,8 @@
 </style>
 </head>
 <body>
+
+<button class="pdf-btn" onclick="window.print()">⬇ Descargar PDF</button>
 
 <header>
   <div class="header-inner">
