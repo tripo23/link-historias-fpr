@@ -474,22 +474,23 @@
 
     <div class="kpi-grid" style="margin-bottom:18px">
       <div class="kpi k-a"><div class="kpi-label">Historias sin traza analizadas</div><div class="kpi-value">492</div><div class="kpi-sub">de las 578 actuales</div></div>
-      <div class="kpi k-a"><div class="kpi-label">Candidatos alta confianza con FPR</div><div class="kpi-value">302</div><div class="kpi-sub">61.4% de las analizadas</div></div>
+      <div class="kpi k-a"><div class="kpi-label">Candidatos alta confianza con FPR</div><div class="kpi-value">302</div><div class="kpi-sub">para revisar y cargar</div></div>
       <div class="kpi k-b"><div class="kpi-label">Confirmado como BAU</div><div class="kpi-value">172</div><div class="kpi-sub">sin iniciativa asociada, con razón clara</div></div>
     </div>
 
+    <p class="section-sub" style="margin-bottom:8px">Si se cargan los 302 candidatos, así quedaría la trazabilidad total por stream (no es el % de la tabla — es el nuevo % de traza global sumando lo que ya trazaba más lo recuperado):</p>
     <table class="table">
-      <thead><tr><th>Stream</th><th class="num">Sin traza analizadas</th><th class="num">Candidato alta</th><th class="num">%</th></tr></thead>
+      <thead><tr><th>Stream</th><th class="num">Hoy</th><th class="num">+ candidatos</th><th class="num">Proyectado</th></tr></thead>
       <tbody>
-        <tr><td>Host</td><td class="num">51</td><td class="num">35</td><td class="num"><span class="pill pill-green">68.6%</span></td></tr>
-        <tr><td>OYO</td><td class="num">72</td><td class="num">52</td><td class="num"><span class="pill pill-green">72.2%</span></td></tr>
-        <tr><td>Catálogo</td><td class="num">90</td><td class="num">65</td><td class="num"><span class="pill pill-green">72.2%</span></td></tr>
-        <tr><td>Playback</td><td class="num">198</td><td class="num">116</td><td class="num"><span class="pill pill-amber">58.6%</span></td></tr>
-        <tr><td>Dispositivos</td><td class="num">48</td><td class="num">21</td><td class="num"><span class="pill pill-amber">43.8%</span></td></tr>
-        <tr><td>Core</td><td class="num">33</td><td class="num">13</td><td class="num"><span class="pill pill-amber">39.4%</span></td></tr>
+        <tr><td>OYO</td><td class="num">77.2%</td><td class="num">+52</td><td class="num"><span class="pill pill-green">93.9%</span></td></tr>
+        <tr><td>Catálogo</td><td class="num">72.5%</td><td class="num">+65</td><td class="num"><span class="pill pill-green">93.8%</span></td></tr>
+        <tr><td>Host</td><td class="num">55.2%</td><td class="num">+35</td><td class="num"><span class="pill pill-green">85.3%</span></td></tr>
+        <tr><td>Dispositivos</td><td class="num">24.2%</td><td class="num">+21</td><td class="num"><span class="pill pill-amber">56.1%</span></td></tr>
+        <tr><td>Playback</td><td class="num">21.1%</td><td class="num">+116</td><td class="num"><span class="pill pill-amber">52.6%</span></td></tr>
+        <tr><td>Core</td><td class="num">3.2%</td><td class="num">+13</td><td class="num"><span class="pill pill-red">45.2%</span></td></tr>
       </tbody>
     </table>
-    <p class="section-sub" style="margin-top:14px">Si se revisan y cargan los 302 candidatos, la traza global (sobre el universo de 492 analizado) pasaría de 0% a ~61% en esas historias puntuales — sumado a las 621 que ya trazan, el total subiría considerablemente. Falta re-correr con el universo completo (578) para tener el número final exacto, pero la tendencia y el orden de magnitud deberían sostenerse.</p>
+    <p class="section-sub" style="margin-top:14px"><b>Global: de 51.8% a 77.0%</b> (923 de 1.199 historias) — todos los streams mejoran, ninguno empeora. Playback es donde más volumen se recupera en términos absolutos (+116), aunque sigue quedando el último incluso después — confirma que ahí hace falta, además, una corrección de fondo en cómo cargan los 3 squads más rezagados (PLBAND, PLBATV, PLBIOS), no solo re-linkear lo existente.</p>
   </section>
 
   <section id="slicing">
